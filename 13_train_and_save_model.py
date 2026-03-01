@@ -47,8 +47,8 @@ def main() -> None:
 
     # 1. Load and prepare data
     print("Loading datasets …")
-    df_fake = pd.read_csv("Fake.csv")
-    df_true = pd.read_csv("True.csv")
+    df_fake = pd.read_csv("data/Fake.csv")
+    df_true = pd.read_csv("data/True.csv")
 
     df_fake["label"] = 0
     df_true["label"] = 1
@@ -99,8 +99,8 @@ def main() -> None:
     print(f"▸ Test F1 Score : {f1:.4f}\n")
 
     # 7. Save artifacts
-    joblib.dump(model, "model.pkl")
-    joblib.dump(vectorizer, "vectorizer.pkl")
+    joblib.dump(model, "models/model.pkl")
+    joblib.dump(vectorizer, "models/vectorizer.pkl")
     print("✔ Saved model.pkl")
     print("✔ Saved vectorizer.pkl")
 

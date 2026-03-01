@@ -39,8 +39,8 @@ def preprocess_text(text: str) -> str:
 
 def load_and_preprocess_dataset(nrows: int = None) -> pd.DataFrame:
     """Load, label, merge, clean, add content, and apply NLTK preprocessing."""
-    df_fake = pd.read_csv("Fake.csv")
-    df_true = pd.read_csv("True.csv")
+    df_fake = pd.read_csv("data/Fake.csv")
+    df_true = pd.read_csv("data/True.csv")
 
     df_fake["label"] = 0
     df_true["label"] = 1

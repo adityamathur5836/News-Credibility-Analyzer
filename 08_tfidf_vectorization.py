@@ -42,8 +42,8 @@ def preprocess_text(text: str) -> str:
 
 def load_and_split_dataset(nrows: int = None) -> tuple:
     """Load, label, merge, clean, add content, apply NLTK preprocessing, and split."""
-    df_fake = pd.read_csv("Fake.csv")
-    df_true = pd.read_csv("True.csv")
+    df_fake = pd.read_csv("data/Fake.csv")
+    df_true = pd.read_csv("data/True.csv")
 
     df_fake["label"] = 0
     df_true["label"] = 1

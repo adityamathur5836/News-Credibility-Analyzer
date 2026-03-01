@@ -19,8 +19,8 @@ from nltk.tokenize import word_tokenize
 @st.cache_resource
 def load_model():
     """Load the trained model and TF-IDF vectorizer (cached across sessions)."""
-    model = joblib.load("model.pkl")
-    vectorizer = joblib.load("vectorizer.pkl")
+    model = joblib.load("models/model.pkl")
+    vectorizer = joblib.load("models/vectorizer.pkl")
     return model, vectorizer
 
 @st.cache_resource

@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+# ... (standard python ignores)
+
+# Virtual Environment
+venv/
+.env
+
+# MacOS
+.DS_Store
+
+# Large Data Files (Originals)
+# Fake.csv
+# True.csv
+
+# Model Artifacts (Ignored if you only want code)
+# model.pkl
+# vectorizer.pkl

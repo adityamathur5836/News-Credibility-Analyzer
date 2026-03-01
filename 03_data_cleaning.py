@@ -15,8 +15,8 @@ import numpy as np
 
 def load_and_prepare() -> pd.DataFrame:
     """Load both CSVs, label, merge, and shuffle (reproduces Step 2)."""
-    df_fake = pd.read_csv("Fake.csv")
-    df_true = pd.read_csv("True.csv")
+    df_fake = pd.read_csv("data/Fake.csv")
+    df_true = pd.read_csv("data/True.csv")
 
     df_fake["label"] = 0
     df_true["label"] = 1

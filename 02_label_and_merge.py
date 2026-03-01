@@ -50,8 +50,8 @@ def display_class_distribution(df: pd.DataFrame) -> None:
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 def main() -> None:
-    fake_path = "Fake.csv"
-    true_path = "True.csv"
+    fake_path = "data/Fake.csv"
+    true_path = "data/True.csv"
 
     # 1. Load
     print("Loading datasets …")

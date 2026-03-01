@@ -14,8 +14,8 @@ import numpy as np
 
 def load_and_clean() -> pd.DataFrame:
     """Reproduce Steps 2–3: load, label, merge, deduplicate, drop missing."""
-    df_fake = pd.read_csv("Fake.csv")
-    df_true = pd.read_csv("True.csv")
+    df_fake = pd.read_csv("data/Fake.csv")
+    df_true = pd.read_csv("data/True.csv")
 
     df_fake["label"] = 0
     df_true["label"] = 1

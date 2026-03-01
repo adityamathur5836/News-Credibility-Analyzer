@@ -25,8 +25,8 @@ COLORS = {"Fake": "#e74c3c", "True": "#2ecc71"}
 
 def load_clean_dataset() -> pd.DataFrame:
     """Load, label, merge, clean, and add content column."""
-    df_fake = pd.read_csv("Fake.csv")
-    df_true = pd.read_csv("True.csv")
+    df_fake = pd.read_csv("data/Fake.csv")
+    df_true = pd.read_csv("data/True.csv")
 
     df_fake["label"] = 0
     df_true["label"] = 1
@@ -68,9 +68,9 @@ def plot_class_distribution(df: pd.DataFrame) -> None:
     ax.set_ylim(0, counts.max() * 1.12)
     sns.despine(left=True)
     fig.tight_layout()
-    fig.savefig("plot_class_distribution.png", dpi=150)
+    fig.savefig("plots/plot_class_distribution.png", dpi=150)
     plt.close(fig)
-    print("  ✔ Saved → plot_class_distribution.png")
+    print("  ✔ Saved → plots/plot_class_distribution.png")
 
 
 # ── Plot 2: Histogram of Article Text Length ────────────────────────────────
@@ -93,9 +93,9 @@ def plot_text_length_histogram(df: pd.DataFrame) -> None:
     ax.legend(title="Class", fontsize=11, title_fontsize=11)
     sns.despine(left=True)
     fig.tight_layout()
-    fig.savefig("plot_text_length_histogram.png", dpi=150)
+    fig.savefig("plots/plot_text_length_histogram.png", dpi=150)
     plt.close(fig)
-    print("  ✔ Saved → plot_text_length_histogram.png")
+    print("  ✔ Saved → plots/plot_text_length_histogram.png")
 
 
 # ── Plot 3: Average Text Length per Class ───────────────────────────────────
@@ -124,9 +124,9 @@ def plot_avg_text_length(df: pd.DataFrame) -> None:
     ax.set_ylim(0, avg_lengths.max() * 1.15)
     sns.despine(left=True)
     fig.tight_layout()
-    fig.savefig("plot_avg_text_length.png", dpi=150)
+    fig.savefig("plots/plot_avg_text_length.png", dpi=150)
     plt.close(fig)
-    print("  ✔ Saved → plot_avg_text_length.png")
+    print("  ✔ Saved → plots/plot_avg_text_length.png")
 
 
 # ── Main ─────────────────────────────────────────────────────────────────────

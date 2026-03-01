@@ -71,8 +71,8 @@ def explore_dataset(df: pd.DataFrame, label: str) -> None:
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 def main() -> None:
-    fake_path = "Fake.csv"
-    true_path = "True.csv"
+    fake_path = "data/Fake.csv"
+    true_path = "data/True.csv"
 
     print("Loading datasets …")
     df_fake, df_true = load_datasets(fake_path, true_path)
