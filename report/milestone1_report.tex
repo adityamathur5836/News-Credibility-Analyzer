@@ -1,0 +1,334 @@
+\documentclass[12pt, a4paper]{article}
+
+% ── Packages ─────────────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{listings}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=blue!70!black,
+    urlcolor=blue!70!black
+}
+
+% ── Header / Footer ─────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Milestone 1 — Classical ML}
+\lhead{News Credibility Analysis}
+\cfoot{\thepage}
+
+% ── Title ────────────────────────────────────────────────────────────────────
+\title{
+    \vspace{-1cm}
+    \textbf{\LARGE Intelligent News Credibility Analysis} \\[0.4cm]
+    \large Milestone 1: Classical Machine Learning--Based Credibility Classification \\[0.3cm]
+    \large Technical Report — University Capstone Project
+}
+
+\author{
+    Aditya Mathur \and Om Kar Shukla \and Yachna Khanna
+}
+
+\date{March 2026}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{fancy}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Abstract}
+% ══════════════════════════════════════════════════════════════════════════════
+
+The proliferation of misinformation across digital media platforms presents a significant challenge to informed public discourse. This report documents the design, implementation, and evaluation of a classical machine learning--based system for automated news credibility classification, constituting Milestone~1 of a two-phase capstone project.
+
+The system was developed using two publicly available datasets — \texttt{Fake.csv} and \texttt{True.csv} — comprising approximately 44,898 raw labeled news articles (38,644 after cleaning). Each article was assigned a binary label (0~for~fake, 1~for~real) and processed through a pipeline encompassing text normalization, stopword removal, and lemmatization. Feature extraction was performed using Term Frequency--Inverse Document Frequency (TF-IDF) vectorization, and two classification algorithms were trained and evaluated: Logistic Regression and Decision Tree.
+
+Model performance was assessed using accuracy, precision, recall, and F1-score metrics. The best-performing model achieved an \textbf{F1-score of 99.03\%}, demonstrating the viability of classical natural language processing methods for credibility detection at scale. The selected model was subsequently deployed via a Streamlit-based web interface, enabling real-time, user-facing credibility prediction with confidence score output. Milestone~2 will extend this system through agentic AI capabilities and retrieval-augmented generation for factual verification.
+
+\vspace{0.3cm}
+\noindent\textbf{Repository:} \url{https://github.com/adityamathur5836/News-Credibility-Analyzer}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Problem Statement}
+% ══════════════════════════════════════════════════════════════════════════════
+
+The rapid dissemination of news content through social media, digital publishing platforms, and online aggregators has fundamentally altered the information ecosystem. While these developments have democratized access to information, they have simultaneously created fertile conditions for the spread of misinformation — content that is intentionally or unintentionally inaccurate, misleading, or fabricated.
+
+Traditional approaches to misinformation detection rely on human fact-checkers, editorial review processes, or manual flagging mechanisms. These methods, while effective in high-stakes contexts, are inherently limited in scalability.
+
+The objective of this project is to design and evaluate a machine learning--based pipeline capable of classifying news articles as credible or potentially misleading based solely on their textual content. This milestone deliberately restricts scope to classical ML methods in order to establish a rigorous performance benchmark against which future, more complex approaches — including large language models and agentic systems — may be evaluated.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Data Description}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Dataset Source}
+The dataset is derived from a widely cited benchmark collection for fake news detection research, comprising two CSV files: \texttt{Fake.csv} and \texttt{True.csv}. These files contain labeled news articles collected from a variety of online sources, covering topics including politics, world events, government affairs, and general news.
+
+\subsection{Features and Schema}
+Each record contains the following fields:
+\begin{itemize}[nosep]
+    \item \textbf{title}: The headline of the news article.
+    \item \textbf{text}: The full body content of the news article.
+    \item \textbf{subject}: A categorical topic domain tag (e.g., politics, world news).
+    \item \textbf{date}: The publication date of the article.
+\end{itemize}
+
+For classification, the \texttt{title} and \texttt{text} fields are combined into a single composite \texttt{content} column, which serves as the primary input to the pipeline. The \texttt{subject} and \texttt{date} fields are retained for exploratory analysis but are not used as model features.
+
+\subsection{Label Encoding}
+Binary integer labels were assigned prior to merging: articles from \texttt{Fake.csv} received label~\textbf{0} (fake), and articles from \texttt{True.csv} received label~\textbf{1} (real).
+
+\subsection{Dataset Size and Class Distribution}
+
+\begin{table}[H]
+\centering
+\caption{Dataset Size Overview}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{Source}     & \textbf{Raw Count} & \textbf{After Cleaning} \\
+\midrule
+Fake.csv (label=0)  & 23,481             & $\sim$20,088            \\
+True.csv (label=1)  & 21,417             & $\sim$18,556            \\
+\midrule
+\textbf{Total}      & \textbf{44,898}    & \textbf{38,644}         \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The near-balanced class distribution reduces the likelihood of class-imbalance artifacts affecting model training without additional intervention.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Data Preprocessing}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Text Cleaning and Normalization}
+Each article's composite content field was processed through the following pipeline:
+\begin{enumerate}[nosep]
+    \item \textbf{Lowercasing}: All text converted to lowercase.
+    \item \textbf{Punctuation removal}: All punctuation characters stripped using Python's \texttt{string.punctuation}.
+    \item \textbf{Tokenization}: Text split into individual word tokens using NLTK's \texttt{word\_tokenize}.
+    \item \textbf{Stopword removal}: English stopwords removed using NLTK's corpus.
+    \item \textbf{Lemmatization}: Tokens reduced to base form using NLTK's \texttt{WordNetLemmatizer}.
+\end{enumerate}
+
+\subsection{Deduplication and Null Handling}
+Duplicate articles (by \texttt{text} field) were removed, and rows with empty or whitespace-only \texttt{title} or \texttt{text} were dropped. This reduced the dataset from 44,898 to \textbf{38,644 records}.
+
+\subsection{Exploratory Data Analysis}
+Three visualizations were generated to understand the data distribution:
+\begin{itemize}[nosep]
+    \item Class distribution bar chart (Fake vs.\ True counts).
+    \item Histogram of article text lengths, coloured by class.
+    \item Average text length comparison per class.
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Feature Engineering}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{TF-IDF Vectorization}
+Feature extraction was performed using scikit-learn's \texttt{TfidfVectorizer} with \texttt{max\_features=5000}. This value was selected based on empirical best practice for this dataset size, balancing vocabulary coverage against computational cost.
+
+\subsection{Train--Test Split}
+The cleaned dataset was split into training (80\%) and test (20\%) subsets using stratified random sampling (\texttt{random\_state=42}) to preserve class proportions across both partitions.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Model Training and Evaluation}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Logistic Regression}
+A Logistic Regression classifier was trained as the primary baseline model. Logistic Regression is well-suited for binary text classification due to its probabilistic output and linear decision boundary.
+
+\subsection{Decision Tree}
+A Decision Tree classifier was trained as a secondary model to provide a non-linear comparison. Decision Trees offer interpretability through explicit decision rules but may overfit on high-dimensional text data.
+
+\subsection{Evaluation Metrics}
+Both models were evaluated using accuracy, precision, recall, and F1-score on the held-out test set:
+
+\begin{table}[H]
+\centering
+\caption{Model Performance Comparison (Full Dataset — 38,644 articles)}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Model}          & \textbf{Accuracy} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} \\
+\midrule
+Logistic Regression      & 98.94\%           & ---                & ---             & 99.03\%           \\
+Decision Tree            & 99.28\%           & 99.36\%            & 99.15\%         & 99.25\%           \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Confusion Matrices}
+On a 5,000-row evaluation subset, the tuned models produced the following confusion matrices:
+
+\begin{table}[H]
+\centering
+\caption{Confusion Matrix — Tuned Logistic Regression}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+                    & \textbf{Predicted Fake} & \textbf{Predicted Real} \\
+\midrule
+\textbf{Actual Fake} & 490 (TN)               & 11 (FP)                \\
+\textbf{Actual Real} & 12 (FN)                & 458 (TP)               \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Confusion Matrix — Tuned Decision Tree}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+                    & \textbf{Predicted Fake} & \textbf{Predicted Real} \\
+\midrule
+\textbf{Actual Fake} & 498 (TN)               & 3 (FP)                 \\
+\textbf{Actual Real} & 3 (FN)                 & 467 (TP)               \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Hyperparameter Tuning}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Methodology}
+Hyperparameter optimization was performed using \texttt{GridSearchCV} with 5-fold stratified cross-validation, optimizing for F1-score.
+
+\subsection{Search Grids}
+
+\textbf{Logistic Regression:}
+\begin{itemize}[nosep]
+    \item \texttt{C} $\in \{0.01,\; 0.1,\; 1,\; 10\}$
+    \item \texttt{class\_weight} $\in \{\text{None},\; \text{``balanced''}\}$
+\end{itemize}
+
+\textbf{Decision Tree:}
+\begin{itemize}[nosep]
+    \item \texttt{max\_depth} $\in \{10,\; 20,\; 50,\; \text{None}\}$
+    \item \texttt{min\_samples\_split} $\in \{2,\; 5,\; 10\}$
+    \item \texttt{class\_weight} $\in \{\text{None},\; \text{``balanced''}\}$
+\end{itemize}
+
+\subsection{Results}
+
+\begin{table}[H]
+\centering
+\caption{Hyperparameter Tuning Results}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+\textbf{Model}    & \textbf{Best Parameters}                              & \textbf{CV F1} & \textbf{Improvement} \\
+\midrule
+Logistic Regression & C=10, class\_weight=`balanced'                       & 0.9758         & +0.96\%              \\
+Decision Tree       & max\_depth=10, min\_samples\_split=2, balanced=None   & 0.9928         & +0.11\%              \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Model Selection for Deployment}
+% ══════════════════════════════════════════════════════════════════════════════
+
+Despite the Decision Tree achieving marginally higher raw metrics, \textbf{Logistic Regression was selected} for deployment in the Streamlit application for the following reasons:
+
+\begin{enumerate}[nosep]
+    \item \textbf{Smoother confidence scores}: LR's \texttt{predict\_proba} provides continuous, well-calibrated probability estimates, whereas Decision Tree probabilities tend to cluster at 0\% or 100\% at leaf nodes.
+    \item \textbf{Interpretability}: LR coefficients enable post-hoc analysis of the most influential vocabulary terms contributing to each prediction.
+    \item \textbf{Generalization}: Linear models are less prone to overfitting on high-dimensional TF-IDF features compared to deep decision trees.
+\end{enumerate}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{System Architecture}
+% ══════════════════════════════════════════════════════════════════════════════
+
+The system follows a sequential pipeline architecture:
+
+\begin{enumerate}[nosep]
+    \item \textbf{Input Layer}: User-submitted text via Streamlit text area.
+    \item \textbf{Preprocessing}: Lowercase $\rightarrow$ punctuation removal $\rightarrow$ tokenization $\rightarrow$ stopword removal $\rightarrow$ lemmatization.
+    \item \textbf{Feature Extraction}: TF-IDF transformation using the pre-fitted vectorizer.
+    \item \textbf{Inference}: Logistic Regression prediction with probability estimation.
+    \item \textbf{Output}: Binary classification (High/Low Credibility) with confidence percentage.
+\end{enumerate}
+
+Model artifacts (\texttt{model.pkl}, \texttt{vectorizer.pkl}) are serialized using \texttt{joblib} and loaded at runtime via Streamlit's \texttt{@st.cache\_resource} decorator to avoid retraining on each session.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Deployment}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\subsection{Streamlit Application}
+The web interface provides:
+\begin{itemize}[nosep]
+    \item A text input area for pasting news articles or headlines.
+    \item A single ``Analyze'' button to trigger the inference pipeline.
+    \item A colour-coded result card displaying the classification and confidence score.
+\end{itemize}
+
+\subsection{Hosting}
+The application is designed for deployment on \textbf{Streamlit Community Cloud} (free tier). All dependencies are specified in \texttt{requirements.txt} and the app loads pre-trained \texttt{.pkl} artifacts at startup, requiring no runtime training.
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Project Structure}
+% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{verbatim}
+News-Credibility-Analyzer/
+├── data/
+│   ├── Fake.csv
+│   └── True.csv
+├── models/
+│   ├── model.pkl
+│   └── vectorizer.pkl
+├── plots/
+│   ├── plot_class_distribution.png
+│   ├── plot_text_length_histogram.png
+│   └── plot_avg_text_length.png
+├── .github/workflows/ci.yml
+├── 01_data_exploration.py
+├── 02_label_and_merge.py
+├── 03_data_cleaning.py
+├── 04_feature_engineering.py
+├── 05_eda_visualizations.py
+├── 06_nltk_preprocessing.py
+├── 07_train_test_split.py
+├── 08_tfidf_vectorization.py
+├── 09_logistic_regression.py
+├── 10_decision_tree.py
+├── 11_model_comparison.py
+├── 12_hyperparameter_tuning.py
+├── 13_train_and_save_model.py
+├── app.py
+├── requirements.txt
+├── README.md
+└── .gitignore
+\end{verbatim}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Future Work — Milestone 2}
+% ══════════════════════════════════════════════════════════════════════════════
+
+Milestone~2 will extend this system through:
+\begin{itemize}[nosep]
+    \item \textbf{Agentic AI}: Autonomous reasoning loops that plan and execute fact-checking workflows.
+    \item \textbf{Retrieval-Augmented Generation (RAG)}: Grounding predictions in external evidence retrieved from the web.
+    \item \textbf{LLM Integration}: Using open-source or free-tier language models for nuanced claim analysis.
+    \item \textbf{Public Deployment}: Hosting the complete system on Streamlit Cloud with a shareable URL.
+\end{itemize}
+
+\end{document}
