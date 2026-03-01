@@ -22,11 +22,13 @@ from sklearn.metrics import accuracy_score, f1_score
 
 # ── Data Loading & Preprocessing ─────────────────────────────────────────────
 
+
 def download_nltk_resources():
     """Download necessary NLTK datasets."""
-    resources = ['stopwords', 'wordnet', 'omw-1.4', 'punkt', 'punkt_tab']
+    resources = ["stopwords", "wordnet", "omw-1.4", "punkt", "punkt_tab"]
     for res in resources:
         nltk.download(res, quiet=True)
+
 
 def preprocess_text(text: str) -> str:
     """Apply text preprocessing: lowercase, remove punctuation, remove stopwords, and lemmatization."""
@@ -35,12 +37,16 @@ def preprocess_text(text: str) -> str:
     text = text.lower()
     text = re.sub(f"[{re.escape(string.punctuation)}]", "", text)
     tokens = word_tokenize(text)
-    stop_words = set(stopwords.words('english'))
+    stop_words = set(stopwords.words("english"))
     lemmatizer = WordNetLemmatizer()
-    cleaned_tokens = [lemmatizer.lemmatize(word) for word in tokens if word not in stop_words]
+    cleaned_tokens = [
+        lemmatizer.lemmatize(word) for word in tokens if word not in stop_words
+    ]
     return " ".join(cleaned_tokens)
 
+
 # ── Main ─────────────────────────────────────────────────────────────────────
+
 
 def main() -> None:
     download_nltk_resources()
@@ -58,7 +64,7 @@ def main() -> None:
     df = df.drop_duplicates(subset="text", keep="first").reset_index(drop=True)
 
     df["title"] = df["title"].replace(r"^\s*$", np.nan, regex=True)
-    df["text"]  = df["text"].replace(r"^\s*$", np.nan, regex=True)
+    df["text"] = df["text"].replace(r"^\s*$", np.nan, regex=True)
     df = df.dropna(subset=["title", "text"]).reset_index(drop=True)
 
     df["content"] = df["title"].fillna("") + " " + df["text"].fillna("")
@@ -87,7 +93,9 @@ def main() -> None:
 
     # 5. Train tuned Logistic Regression
     print("Training Logistic Regression (C=10, class_weight='balanced') …")
-    model = LogisticRegression(C=10, class_weight="balanced", max_iter=1000, random_state=42)
+    model = LogisticRegression(
+        C=10, class_weight="balanced", max_iter=1000, random_state=42
+    )
     model.fit(X_train_tfidf, y_train)
     print("✔ Training complete\n")
 
@@ -103,6 +111,7 @@ def main() -> None:
     joblib.dump(vectorizer, "models/vectorizer.pkl")
     print("✔ Saved model.pkl")
     print("✔ Saved vectorizer.pkl")
+
 
 if __name__ == "__main__":
     main()

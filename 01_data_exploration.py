@@ -10,8 +10,8 @@ Load Fake.csv and True.csv, and display:
 
 import pandas as pd
 
-
 # ── Helpers ──────────────────────────────────────────────────────────────────
+
 
 def load_datasets(fake_path: str, true_path: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Load the fake and true news datasets from CSV files."""
@@ -34,11 +34,18 @@ def display_head(df: pd.DataFrame, n: int = 5, max_col_width: int = 80) -> None:
     """Display the first n rows, truncating long string columns for readability."""
     preview = df.head(n).copy()
     for col in preview.select_dtypes(include="object").columns:
-        preview[col] = preview[col].str.slice(0, max_col_width).apply(
-            lambda x: x + "…" if isinstance(x, str) and len(x) == max_col_width else x
+        preview[col] = (
+            preview[col]
+            .str.slice(0, max_col_width)
+            .apply(
+                lambda x: (
+                    x + "…" if isinstance(x, str) and len(x) == max_col_width else x
+                )
+            )
         )
-    with pd.option_context("display.max_colwidth", max_col_width + 5,
-                           "display.width", 200):
+    with pd.option_context(
+        "display.max_colwidth", max_col_width + 5, "display.width", 200
+    ):
         print(preview.to_string(index=False))
 
 
@@ -69,6 +76,7 @@ def explore_dataset(df: pd.DataFrame, label: str) -> None:
 
 
 # ── Main ─────────────────────────────────────────────────────────────────────
+
 
 def main() -> None:
     fake_path = "data/Fake.csv"

@@ -16,6 +16,7 @@ from nltk.tokenize import word_tokenize
 
 # ── Setup ────────────────────────────────────────────────────────────────────
 
+
 @st.cache_resource
 def load_model():
     """Load the trained model and TF-IDF vectorizer (cached across sessions)."""
@@ -23,11 +24,13 @@ def load_model():
     vectorizer = joblib.load("models/vectorizer.pkl")
     return model, vectorizer
 
+
 @st.cache_resource
 def download_nltk_data():
     """Download NLTK resources once."""
-    for res in ['stopwords', 'wordnet', 'omw-1.4', 'punkt', 'punkt_tab']:
+    for res in ["stopwords", "wordnet", "omw-1.4", "punkt", "punkt_tab"]:
         nltk.download(res, quiet=True)
+
 
 def preprocess_text(text: str) -> str:
     """Apply the same preprocessing pipeline used during training."""
@@ -36,22 +39,24 @@ def preprocess_text(text: str) -> str:
     text = text.lower()
     text = re.sub(f"[{re.escape(string.punctuation)}]", "", text)
     tokens = word_tokenize(text)
-    stop_words = set(stopwords.words('english'))
+    stop_words = set(stopwords.words("english"))
     lemmatizer = WordNetLemmatizer()
-    cleaned_tokens = [lemmatizer.lemmatize(word) for word in tokens if word not in stop_words]
+    cleaned_tokens = [
+        lemmatizer.lemmatize(word) for word in tokens if word not in stop_words
+    ]
     return " ".join(cleaned_tokens)
+
 
 # ── Page Config ──────────────────────────────────────────────────────────────
 
 st.set_page_config(
-    page_title="News Credibility Analyzer",
-    page_icon="📰",
-    layout="centered"
+    page_title="News Credibility Analyzer", page_icon="📰", layout="centered"
 )
 
 # ── Custom CSS ───────────────────────────────────────────────────────────────
 
-st.markdown("""
+st.markdown(
+    """
 <style>
     .main-title {
         text-align: center;
@@ -91,7 +96,9 @@ st.markdown("""
         border-top: 1px solid #e0e0e0;
     }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # ── App ──────────────────────────────────────────────────────────────────────
 
@@ -100,15 +107,20 @@ download_nltk_data()
 model, vectorizer = load_model()
 
 # Header
-st.markdown('<h1 class="main-title">📰 News Credibility Analyzer</h1>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">Paste a news article or headline below to check its credibility.</p>', unsafe_allow_html=True)
+st.markdown(
+    '<h1 class="main-title">📰 News Credibility Analyzer</h1>', unsafe_allow_html=True
+)
+st.markdown(
+    '<p class="subtitle">Paste a news article or headline below to check its credibility.</p>',
+    unsafe_allow_html=True,
+)
 
 # Input
 user_text = st.text_area(
     "Enter news text",
     height=180,
     placeholder="Paste the news article or headline here …",
-    label_visibility="collapsed"
+    label_visibility="collapsed",
 )
 
 # Predict
@@ -134,19 +146,25 @@ if analyze_btn:
 
             # 4. Display result
             if prediction == 1:
-                st.markdown(f"""
+                st.markdown(
+                    f"""
                 <div class="result-box high-cred">
                     <div class="cred-label" style="color: #28a745;">✅ High Credibility</div>
                     <div class="confidence">Confidence: {confidence:.1f}%</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """,
+                    unsafe_allow_html=True,
+                )
             else:
-                st.markdown(f"""
+                st.markdown(
+                    f"""
                 <div class="result-box low-cred">
                     <div class="cred-label" style="color: #dc3545;">⚠️ Low Credibility</div>
                     <div class="confidence">Confidence: {confidence:.1f}%</div>
                 </div>
-                """, unsafe_allow_html=True)
+                """,
+                    unsafe_allow_html=True,
+                )
 
 # Footer
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)

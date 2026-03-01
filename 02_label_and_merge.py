@@ -9,8 +9,8 @@ Step 2: Label & Merge Datasets
 
 import pandas as pd
 
-
 # ── Helpers ──────────────────────────────────────────────────────────────────
+
 
 def load_datasets(fake_path: str, true_path: str) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Load the fake and true news CSV files."""
@@ -19,7 +19,9 @@ def load_datasets(fake_path: str, true_path: str) -> tuple[pd.DataFrame, pd.Data
     return df_fake, df_true
 
 
-def add_labels(df_fake: pd.DataFrame, df_true: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+def add_labels(
+    df_fake: pd.DataFrame, df_true: pd.DataFrame
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Add a binary 'label' column: 0 for Fake, 1 for True."""
     df_fake["label"] = 0
     df_true["label"] = 1
@@ -42,12 +44,15 @@ def display_class_distribution(df: pd.DataFrame) -> None:
     print("-" * 35)
     for label_val, count in counts.items():
         pct = count / len(df) * 100
-        print(f"  {label_map[label_val]:>5} (label={label_val}): {count:>6}  ({pct:.2f}%)")
+        print(
+            f"  {label_map[label_val]:>5} (label={label_val}): {count:>6}  ({pct:.2f}%)"
+        )
     print("-" * 35)
     print(f"  {'Total':>14}: {len(df):>6}")
 
 
 # ── Main ─────────────────────────────────────────────────────────────────────
+
 
 def main() -> None:
     fake_path = "data/Fake.csv"

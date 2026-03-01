@@ -20,17 +20,20 @@ from nltk.tokenize import word_tokenize
 
 # ── NLTK Downloads ───────────────────────────────────────────────────────────
 
+
 def download_nltk_resources():
     """Download necessary NLTK datasets."""
-    resources = ['stopwords', 'wordnet', 'omw-1.4', 'punkt', 'punkt_tab']
+    resources = ["stopwords", "wordnet", "omw-1.4", "punkt", "punkt_tab"]
     for res in resources:
         nltk.download(res, quiet=True)
 
+
 # ── Preprocessing Function ───────────────────────────────────────────────────
+
 
 def preprocess_text(text: str) -> str:
     """
-    Apply text preprocessing: lowercase, remove punctuation, remove stopwords, 
+    Apply text preprocessing: lowercase, remove punctuation, remove stopwords,
     and lemmatization.
     """
     if not isinstance(text, str):
@@ -47,16 +50,20 @@ def preprocess_text(text: str) -> str:
     tokens = word_tokenize(text)
 
     # 4. Remove stopwords and 5. Lemmatize
-    stop_words = set(stopwords.words('english'))
+    stop_words = set(stopwords.words("english"))
     lemmatizer = WordNetLemmatizer()
-    
+
     # Filter stopwords and lemmatize in one pass
-    cleaned_tokens = [lemmatizer.lemmatize(word) for word in tokens if word not in stop_words]
+    cleaned_tokens = [
+        lemmatizer.lemmatize(word) for word in tokens if word not in stop_words
+    ]
 
     # Join back into a single string
     return " ".join(cleaned_tokens)
 
+
 # ── Data Loading (reproduces Steps 2–4) ─────────────────────────────────────
+
 
 def load_dataset_with_content() -> pd.DataFrame:
     """Load, label, merge, clean, and add content column."""
@@ -72,14 +79,16 @@ def load_dataset_with_content() -> pd.DataFrame:
     df = df.drop_duplicates(subset="text", keep="first").reset_index(drop=True)
 
     df["title"] = df["title"].replace(r"^\s*$", np.nan, regex=True)
-    df["text"]  = df["text"].replace(r"^\s*$", np.nan, regex=True)
+    df["text"] = df["text"].replace(r"^\s*$", np.nan, regex=True)
     df = df.dropna(subset=["title", "text"]).reset_index(drop=True)
 
     df["content"] = df["title"].fillna("") + " " + df["text"].fillna("")
     df["content"] = df["content"].str.strip()
     return df
 
+
 # ── Main ─────────────────────────────────────────────────────────────────────
+
 
 def main() -> None:
     # 1. Download NLTK resources
@@ -93,18 +102,18 @@ def main() -> None:
     print(f"✔ Dataset ready  →  {df.shape[0]} rows × {df.shape[1]} columns\n")
 
     # 3. Apply preprocessing
-    # Note: For large datasets, this might take a while. 
-    # We'll apply it to the first 1000 rows for demonstration if it's too slow, 
+    # Note: For large datasets, this might take a while.
+    # We'll apply it to the first 1000 rows for demonstration if it's too slow,
     # but here we'll try the whole set or a significant chunk.
     print("Applying NLTK preprocessing to 'content' column …")
     print("(This may take a minute depending on dataset size)")
-    
-    # Applying to a subset for faster demonstration if needed, 
+
+    # Applying to a subset for faster demonstration if needed,
     # but the requirement is to apply it to the column.
-    # To be safe and efficient, we use progress_apply if tqdm is available, 
+    # To be safe and efficient, we use progress_apply if tqdm is available,
     # but we'll stick to standard apply as per "standard Python libraries".
     df["clean_text"] = df["content"].apply(preprocess_text)
-    
+
     print("✔ Preprocessing complete\n")
 
     # 4. Display results
@@ -120,6 +129,7 @@ def main() -> None:
     print("-" * 45)
     print(f"  Columns : {list(df.columns)}")
     print(f"  Shape   : {df.shape[0]} rows × {df.shape[1]} columns")
+
 
 if __name__ == "__main__":
     main()

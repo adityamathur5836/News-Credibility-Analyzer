@@ -9,8 +9,8 @@ Step 4: Feature Engineering – Combine Title & Text
 import pandas as pd
 import numpy as np
 
-
 # ── Helpers ──────────────────────────────────────────────────────────────────
+
 
 def load_and_clean() -> pd.DataFrame:
     """Reproduce Steps 2–3: load, label, merge, deduplicate, drop missing."""
@@ -28,7 +28,7 @@ def load_and_clean() -> pd.DataFrame:
 
     # Replace empty / whitespace-only strings with NaN, then drop
     df["title"] = df["title"].replace(r"^\s*$", np.nan, regex=True)
-    df["text"]  = df["text"].replace(r"^\s*$", np.nan, regex=True)
+    df["text"] = df["text"].replace(r"^\s*$", np.nan, regex=True)
     df = df.dropna(subset=["title", "text"]).reset_index(drop=True)
 
     return df
@@ -54,6 +54,7 @@ def display_content_sample(df: pd.DataFrame, n: int = 5) -> None:
 
 
 # ── Main ─────────────────────────────────────────────────────────────────────
+
 
 def main() -> None:
     # 1. Load cleaned dataset

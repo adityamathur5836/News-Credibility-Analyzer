@@ -10,8 +10,8 @@ Step 3: Data Cleaning
 import pandas as pd
 import numpy as np
 
-
 # ── Helpers ──────────────────────────────────────────────────────────────────
+
 
 def load_and_prepare() -> pd.DataFrame:
     """Load both CSVs, label, merge, and shuffle (reproduces Step 2)."""
@@ -58,7 +58,7 @@ def drop_missing_critical(df: pd.DataFrame) -> pd.DataFrame:
 
     # Replace empty / whitespace-only strings with NaN so dropna catches them
     df["title"] = df["title"].replace(r"^\s*$", np.nan, regex=True)
-    df["text"]  = df["text"].replace(r"^\s*$", np.nan, regex=True)
+    df["text"] = df["text"].replace(r"^\s*$", np.nan, regex=True)
 
     df = df.dropna(subset=["title", "text"]).reset_index(drop=True)
     after = len(df)
@@ -81,6 +81,7 @@ def display_final_shape(df: pd.DataFrame) -> None:
 
 
 # ── Main ─────────────────────────────────────────────────────────────────────
+
 
 def main() -> None:
     # 1. Load merged dataset (reproduces Step 2 pipeline)

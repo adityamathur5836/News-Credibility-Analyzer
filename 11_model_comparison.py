@@ -25,16 +25,18 @@ from sklearn.metrics import (
     recall_score,
     f1_score,
     confusion_matrix,
-    classification_report
+    classification_report,
 )
 
 # ── Data Loading & Preprocessing (reproduces Steps 2–8) ──────────────────────
 
+
 def download_nltk_resources():
     """Download necessary NLTK datasets."""
-    resources = ['stopwords', 'wordnet', 'omw-1.4', 'punkt', 'punkt_tab']
+    resources = ["stopwords", "wordnet", "omw-1.4", "punkt", "punkt_tab"]
     for res in resources:
         nltk.download(res, quiet=True)
+
 
 def preprocess_text(text: str) -> str:
     """Apply text preprocessing: lowercase, remove punctuation, remove stopwords, and lemmatization."""
@@ -43,10 +45,13 @@ def preprocess_text(text: str) -> str:
     text = text.lower()
     text = re.sub(f"[{re.escape(string.punctuation)}]", "", text)
     tokens = word_tokenize(text)
-    stop_words = set(stopwords.words('english'))
+    stop_words = set(stopwords.words("english"))
     lemmatizer = WordNetLemmatizer()
-    cleaned_tokens = [lemmatizer.lemmatize(word) for word in tokens if word not in stop_words]
+    cleaned_tokens = [
+        lemmatizer.lemmatize(word) for word in tokens if word not in stop_words
+    ]
     return " ".join(cleaned_tokens)
+
 
 def load_and_vectorize_dataset(nrows: int = None) -> tuple:
     """Load, label, merge, clean, add content, apply NLTK preprocessing, split, and vectorize."""
@@ -66,7 +71,7 @@ def load_and_vectorize_dataset(nrows: int = None) -> tuple:
     df = df.drop_duplicates(subset="text", keep="first").reset_index(drop=True)
 
     df["title"] = df["title"].replace(r"^\s*$", np.nan, regex=True)
-    df["text"]  = df["text"].replace(r"^\s*$", np.nan, regex=True)
+    df["text"] = df["text"].replace(r"^\s*$", np.nan, regex=True)
     df = df.dropna(subset=["title", "text"]).reset_index(drop=True)
 
     df["content"] = df["title"].fillna("") + " " + df["text"].fillna("")
@@ -90,7 +95,9 @@ def load_and_vectorize_dataset(nrows: int = None) -> tuple:
 
     return X_train_tfidf, X_test_tfidf, y_train, y_test
 
+
 # ── Model Training ───────────────────────────────────────────────────────────
+
 
 def train_logistic_regression(X_train, y_train):
     """Train a Logistic Regression classifier."""
@@ -98,13 +105,16 @@ def train_logistic_regression(X_train, y_train):
     model.fit(X_train, y_train)
     return model
 
+
 def train_decision_tree(X_train, y_train):
     """Train a Decision Tree classifier."""
     model = DecisionTreeClassifier(random_state=42)
     model.fit(X_train, y_train)
     return model
 
+
 # ── Evaluation ───────────────────────────────────────────────────────────────
+
 
 def evaluate_model(model, X_test, y_test):
     """Evaluate the model and return metrics dict + predictions."""
@@ -115,12 +125,14 @@ def evaluate_model(model, X_test, y_test):
         "Precision": precision_score(y_test, y_pred),
         "Recall": recall_score(y_test, y_pred),
         "F1 Score": f1_score(y_test, y_pred),
-        "Confusion Matrix": confusion_matrix(y_test, y_pred)
+        "Confusion Matrix": confusion_matrix(y_test, y_pred),
     }
 
     return metrics, y_pred
 
+
 # ── Comparison Table ─────────────────────────────────────────────────────────
+
 
 def print_comparison_table(lr_metrics: dict, dt_metrics: dict) -> None:
     """Print a formatted side-by-side comparison table."""
@@ -139,19 +151,30 @@ def print_comparison_table(lr_metrics: dict, dt_metrics: dict) -> None:
 
     print(separator)
 
+
 def print_confusion_matrices(lr_cm, dt_cm) -> None:
     """Print both confusion matrices side by side."""
     print(f"\n  {'Logistic Regression':<25} {'Decision Tree'}")
-    print(f"  [[TN: {lr_cm[0][0]:>4}, FP: {lr_cm[0][1]:>4}]     [[TN: {dt_cm[0][0]:>4}, FP: {dt_cm[0][1]:>4}]")
-    print(f"   [FN: {lr_cm[1][0]:>4}, TP: {lr_cm[1][1]:>4}]]      [FN: {dt_cm[1][0]:>4}, TP: {dt_cm[1][1]:>4}]]")
+    print(
+        f"  [[TN: {lr_cm[0][0]:>4}, FP: {lr_cm[0][1]:>4}]     [[TN: {dt_cm[0][0]:>4}, FP: {dt_cm[0][1]:>4}]"
+    )
+    print(
+        f"   [FN: {lr_cm[1][0]:>4}, TP: {lr_cm[1][1]:>4}]]      [FN: {dt_cm[1][0]:>4}, TP: {dt_cm[1][1]:>4}]]"
+    )
+
 
 # ── Main ─────────────────────────────────────────────────────────────────────
+
 
 def main() -> None:
     # 1. Load and vectorize dataset
     print("Loading and vectorizing dataset (subset of 5000 rows) …")
-    X_train_tfidf, X_test_tfidf, y_train, y_test = load_and_vectorize_dataset(nrows=5000)
-    print(f"✔ Data ready  →  Train: {X_train_tfidf.shape}, Test: {X_test_tfidf.shape}\n")
+    X_train_tfidf, X_test_tfidf, y_train, y_test = load_and_vectorize_dataset(
+        nrows=5000
+    )
+    print(
+        f"✔ Data ready  →  Train: {X_train_tfidf.shape}, Test: {X_test_tfidf.shape}\n"
+    )
 
     # 2. Train both models
     print("Training Logistic Regression …")
@@ -181,7 +204,9 @@ def main() -> None:
     # 5. Confusion Matrices
     print("▸ Confusion Matrices")
     print("-" * 55)
-    print_confusion_matrices(lr_metrics["Confusion Matrix"], dt_metrics["Confusion Matrix"])
+    print_confusion_matrices(
+        lr_metrics["Confusion Matrix"], dt_metrics["Confusion Matrix"]
+    )
     print()
 
     # 6. Individual Classification Reports
@@ -205,6 +230,7 @@ def main() -> None:
         winner = "Both models (tie)"
     print(f"  ★ Best model by F1 Score: {winner}")
     print("=" * 55)
+
 
 if __name__ == "__main__":
     main()

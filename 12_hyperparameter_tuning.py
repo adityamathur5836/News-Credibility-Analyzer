@@ -26,16 +26,18 @@ from sklearn.metrics import (
     recall_score,
     f1_score,
     confusion_matrix,
-    classification_report
+    classification_report,
 )
 
 # ── Data Loading & Preprocessing (reproduces Steps 2–8) ──────────────────────
 
+
 def download_nltk_resources():
     """Download necessary NLTK datasets."""
-    resources = ['stopwords', 'wordnet', 'omw-1.4', 'punkt', 'punkt_tab']
+    resources = ["stopwords", "wordnet", "omw-1.4", "punkt", "punkt_tab"]
     for res in resources:
         nltk.download(res, quiet=True)
+
 
 def preprocess_text(text: str) -> str:
     """Apply text preprocessing: lowercase, remove punctuation, remove stopwords, and lemmatization."""
@@ -44,10 +46,13 @@ def preprocess_text(text: str) -> str:
     text = text.lower()
     text = re.sub(f"[{re.escape(string.punctuation)}]", "", text)
     tokens = word_tokenize(text)
-    stop_words = set(stopwords.words('english'))
+    stop_words = set(stopwords.words("english"))
     lemmatizer = WordNetLemmatizer()
-    cleaned_tokens = [lemmatizer.lemmatize(word) for word in tokens if word not in stop_words]
+    cleaned_tokens = [
+        lemmatizer.lemmatize(word) for word in tokens if word not in stop_words
+    ]
     return " ".join(cleaned_tokens)
+
 
 def load_and_vectorize_dataset(nrows: int = None) -> tuple:
     """Load, label, merge, clean, preprocess, split, and vectorize.
@@ -68,7 +73,7 @@ def load_and_vectorize_dataset(nrows: int = None) -> tuple:
     df = df.drop_duplicates(subset="text", keep="first").reset_index(drop=True)
 
     df["title"] = df["title"].replace(r"^\s*$", np.nan, regex=True)
-    df["text"]  = df["text"].replace(r"^\s*$", np.nan, regex=True)
+    df["text"] = df["text"].replace(r"^\s*$", np.nan, regex=True)
     df = df.dropna(subset=["title", "text"]).reset_index(drop=True)
 
     df["content"] = df["title"].fillna("") + " " + df["text"].fillna("")
@@ -89,7 +94,9 @@ def load_and_vectorize_dataset(nrows: int = None) -> tuple:
 
     return X_train_tfidf, X_test_tfidf, y_train, y_test, vectorizer
 
+
 # ── Evaluation Helper ────────────────────────────────────────────────────────
+
 
 def evaluate_model(model, X_test, y_test) -> dict:
     """Evaluate and return metrics dict + predictions."""
@@ -99,11 +106,13 @@ def evaluate_model(model, X_test, y_test) -> dict:
         "Precision": precision_score(y_test, y_pred),
         "Recall": recall_score(y_test, y_pred),
         "F1 Score": f1_score(y_test, y_pred),
-        "Confusion Matrix": confusion_matrix(y_test, y_pred)
+        "Confusion Matrix": confusion_matrix(y_test, y_pred),
     }
     return metrics, y_pred
 
+
 # ── Hyperparameter Tuning ────────────────────────────────────────────────────
+
 
 def tune_logistic_regression(X_train, y_train):
     """Tune Logistic Regression with GridSearchCV."""
@@ -120,6 +129,7 @@ def tune_logistic_regression(X_train, y_train):
     )
     grid.fit(X_train, y_train)
     return grid.best_estimator_, grid.best_params_, grid.best_score_
+
 
 def tune_decision_tree(X_train, y_train):
     """Tune Decision Tree with GridSearchCV."""
@@ -138,7 +148,9 @@ def tune_decision_tree(X_train, y_train):
     grid.fit(X_train, y_train)
     return grid.best_estimator_, grid.best_params_, grid.best_score_
 
+
 # ── Feature Analysis ─────────────────────────────────────────────────────────
+
 
 def display_top_features(model, vectorizer, n_top: int = 15):
     """Extract and display top positive/negative LR coefficients."""
@@ -162,7 +174,9 @@ def display_top_features(model, vectorizer, n_top: int = 15):
     for rank, idx in enumerate(top_negative_idx, 1):
         print(f"  {rank:<6} {feature_names[idx]:<20} {coefficients[idx]:>12.4f}")
 
+
 # ── Comparison Helpers ───────────────────────────────────────────────────────
+
 
 def print_comparison_table(lr_metrics: dict, dt_metrics: dict) -> None:
     """Print tuned model comparison table."""
@@ -175,12 +189,16 @@ def print_comparison_table(lr_metrics: dict, dt_metrics: dict) -> None:
         print(f"  {name:<10} | {lr_metrics[name]:>20.4f} | {dt_metrics[name]:>15.4f}")
     print(sep)
 
+
 # ── Main ─────────────────────────────────────────────────────────────────────
+
 
 def main() -> None:
     # 1. Load data
     print("Loading and vectorizing dataset (subset of 5000 rows) …")
-    X_train, X_test, y_train, y_test, vectorizer = load_and_vectorize_dataset(nrows=5000)
+    X_train, X_test, y_train, y_test, vectorizer = load_and_vectorize_dataset(
+        nrows=5000
+    )
     print(f"✔ Data ready  →  Train: {X_train.shape}, Test: {X_test.shape}\n")
 
     # ── 2. Baseline models (default hyperparameters) ─────────────────────────
@@ -249,8 +267,12 @@ def main() -> None:
     lr_cm = lr_tuned_metrics["Confusion Matrix"]
     dt_cm = dt_tuned_metrics["Confusion Matrix"]
     print(f"\n  {'Logistic Regression':<25} {'Decision Tree'}")
-    print(f"  [[TN: {lr_cm[0][0]:>4}, FP: {lr_cm[0][1]:>4}]     [[TN: {dt_cm[0][0]:>4}, FP: {dt_cm[0][1]:>4}]")
-    print(f"   [FN: {lr_cm[1][0]:>4}, TP: {lr_cm[1][1]:>4}]]      [FN: {dt_cm[1][0]:>4}, TP: {dt_cm[1][1]:>4}]]")
+    print(
+        f"  [[TN: {lr_cm[0][0]:>4}, FP: {lr_cm[0][1]:>4}]     [[TN: {dt_cm[0][0]:>4}, FP: {dt_cm[0][1]:>4}]"
+    )
+    print(
+        f"   [FN: {lr_cm[1][0]:>4}, TP: {lr_cm[1][1]:>4}]]      [FN: {dt_cm[1][0]:>4}, TP: {dt_cm[1][1]:>4}]]"
+    )
     print()
 
     # ── 7. Classification Reports ────────────────────────────────────────────
@@ -280,6 +302,7 @@ def main() -> None:
         print("    Top influential words are available only for Logistic Regression.")
 
     print()
+
 
 if __name__ == "__main__":
     main()

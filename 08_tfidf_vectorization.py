@@ -22,11 +22,13 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 # ── Data Loading & Preprocessing (reproduces Steps 2–7) ──────────────────────
 
+
 def download_nltk_resources():
     """Download necessary NLTK datasets."""
-    resources = ['stopwords', 'wordnet', 'omw-1.4', 'punkt', 'punkt_tab']
+    resources = ["stopwords", "wordnet", "omw-1.4", "punkt", "punkt_tab"]
     for res in resources:
         nltk.download(res, quiet=True)
+
 
 def preprocess_text(text: str) -> str:
     """Apply text preprocessing: lowercase, remove punctuation, remove stopwords, and lemmatization."""
@@ -35,10 +37,13 @@ def preprocess_text(text: str) -> str:
     text = text.lower()
     text = re.sub(f"[{re.escape(string.punctuation)}]", "", text)
     tokens = word_tokenize(text)
-    stop_words = set(stopwords.words('english'))
+    stop_words = set(stopwords.words("english"))
     lemmatizer = WordNetLemmatizer()
-    cleaned_tokens = [lemmatizer.lemmatize(word) for word in tokens if word not in stop_words]
+    cleaned_tokens = [
+        lemmatizer.lemmatize(word) for word in tokens if word not in stop_words
+    ]
     return " ".join(cleaned_tokens)
+
 
 def load_and_split_dataset(nrows: int = None) -> tuple:
     """Load, label, merge, clean, add content, apply NLTK preprocessing, and split."""
@@ -49,7 +54,7 @@ def load_and_split_dataset(nrows: int = None) -> tuple:
     df_true["label"] = 1
 
     df = pd.concat([df_fake, df_true], ignore_index=True)
-    
+
     if nrows:
         df = df.sample(n=min(nrows, len(df)), random_state=42).reset_index(drop=True)
     else:
@@ -58,40 +63,44 @@ def load_and_split_dataset(nrows: int = None) -> tuple:
     df = df.drop_duplicates(subset="text", keep="first").reset_index(drop=True)
 
     df["title"] = df["title"].replace(r"^\s*$", np.nan, regex=True)
-    df["text"]  = df["text"].replace(r"^\s*$", np.nan, regex=True)
+    df["text"] = df["text"].replace(r"^\s*$", np.nan, regex=True)
     df = df.dropna(subset=["title", "text"]).reset_index(drop=True)
 
     df["content"] = df["title"].fillna("") + " " + df["text"].fillna("")
     df["content"] = df["content"].str.strip()
-    
+
     # Apply NLTK preprocessing
     download_nltk_resources()
     df["clean_text"] = df["content"].apply(preprocess_text)
-    
+
     # Stratified Split
     X = df["clean_text"]
     y = df["label"]
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.20, random_state=42, stratify=y
     )
-    
+
     return X_train, X_test, y_train, y_test
 
+
 # ── TF-IDF Vectorization ─────────────────────────────────────────────────────
+
 
 def apply_tfidf_vectorization(X_train, X_test, max_features=5000):
     """Apply TF-IDF vectorization: fit on train, transform both."""
     vectorizer = TfidfVectorizer(max_features=max_features)
-    
+
     # Fit and transform training data
     X_train_tfidf = vectorizer.fit_transform(X_train)
-    
+
     # Transform testing data
     X_test_tfidf = vectorizer.transform(X_test)
-    
+
     return X_train_tfidf, X_test_tfidf, vectorizer
 
+
 # ── Main ─────────────────────────────────────────────────────────────────────
+
 
 def main() -> None:
     # 1. Load and split dataset (using a subset for faster verification)
@@ -116,6 +125,7 @@ def main() -> None:
     print("-" * 45)
     feature_names = vectorizer.get_feature_names_out()
     print(f"  {feature_names[:10]}")
+
 
 if __name__ == "__main__":
     main()
