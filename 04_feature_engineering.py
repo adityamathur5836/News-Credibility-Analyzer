@@ -1,15 +1,8 @@
-"""
-Step 4: Feature Engineering – Combine Title & Text
----------------------------------------------------
-  - Create a new 'content' column by combining 'title' and 'text'
-  - Handle NaN values safely using fillna
-  - Display sample rows of the new column
-"""
+
 
 import pandas as pd
 import numpy as np
 
-# ── Helpers ──────────────────────────────────────────────────────────────────
 
 
 def load_and_clean() -> pd.DataFrame:

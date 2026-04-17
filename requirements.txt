@@ -6,3 +6,10 @@ nltk
 joblib
 matplotlib
 seaborn
+langchain
+langchain-google-genai
+langchain-community
+faiss-cpu
+sentence-transformers
+duckduckgo-search
+python-dotenv

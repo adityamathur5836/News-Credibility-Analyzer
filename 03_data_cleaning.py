@@ -1,16 +1,8 @@
-"""
-Step 3: Data Cleaning
----------------------
-  - Remove duplicate rows based on the article text column
-  - Check for missing values in 'title' and 'text'
-  - Drop rows with missing critical content
-  - Print the updated dataset shape
-"""
+
 
 import pandas as pd
 import numpy as np
 
-# ── Helpers ──────────────────────────────────────────────────────────────────
 
 
 def load_and_prepare() -> pd.DataFrame:

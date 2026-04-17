@@ -1,15 +1,5 @@
-"""
-Step 2: Label & Merge Datasets
--------------------------------
-  - Add a binary 'label' column  →  0 = Fake, 1 = True
-  - Concatenate both datasets into a single DataFrame
-  - Shuffle and reset the index
-  - Display the class distribution
-"""
 
 import pandas as pd
-
-# ── Helpers ──────────────────────────────────────────────────────────────────
 
 
 def load_datasets(fake_path: str, true_path: str) -> tuple[pd.DataFrame, pd.DataFrame]:

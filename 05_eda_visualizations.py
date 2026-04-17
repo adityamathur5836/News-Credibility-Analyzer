@@ -1,11 +1,3 @@
-"""
-Step 5: Exploratory Data Analysis – Visualizations
-----------------------------------------------------
-  - Plot class distribution (Fake vs True)
-  - Plot histogram of article text length
-  - Compare average text length per class
-  Uses only matplotlib and seaborn.
-"""
 
 import pandas as pd
 import numpy as np
@@ -15,13 +7,11 @@ matplotlib.use("Agg")  # non-interactive backend (saves to file)
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# ── Theme ────────────────────────────────────────────────────────────────────
 
 sns.set_theme(style="whitegrid", palette="muted", font_scale=1.1)
 COLORS = {"Fake": "#e74c3c", "True": "#2ecc71"}
 
 
-# ── Data Loading (reproduces Steps 2–4) ─────────────────────────────────────
 
 
 def load_clean_dataset() -> pd.DataFrame:

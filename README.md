@@ -1,80 +1,79 @@
-# Project: Intelligent News Credibility Analysis
+# Intelligent News Credibility Analyzer
 
-## From Pattern-Based Classification to Agentic AI Verification
+![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
+![Framework](https://img.shields.io/badge/Streamlit-FF4B4B?logo=streamlit&logoColor=white)
+![Milestone2](https://img.shields.io/badge/Agentic_AI-LangChain-green)
+![LLM](https://img.shields.io/badge/LLM-Gemini_1.5_Flash-orange)
 
-### Project Overview
-This project focuses on the development of a multi-phase system for evaluating the credibility of news content. It transitions from a statistical, classical machine learning approach in Milestone 1 to an autonomous, reasoning-based AI agent in Milestone 2.
+A two-phase capstone project moving from classical Machine Learning to a modern, Agentic AI retrieval-augmented verification system.
 
-- **Milestone 1:** Implementation of a supervised machine learning pipeline using classical NLP (TF-IDF) and scikit-learn classifiers (Logistic Regression & Decision Trees) to detect misinformation patterns.
-- **Milestone 2:** Extension into an agentic AI system that performs fact-checking, source retrieval (RAG), and structured reasoning to verify claims against external knowledge sources.
+## 🚀 Two-Phase Architecture
+
+This project evaluates the credibility of news content using two radically different paradigms, available side-by-side in the Streamlit app.
+
+### Milestone 1: Classical ML (Statistical Pre-screening)
+- **Methodology**: TF-IDF Vectorization -> Logistic Regression
+- **Training Data**: 38,644 cleaned articles (True vs Fake)
+- **Performance**: ~97% Accuracy
+- **Pros**: Lightning fast, offline, reliable statistical baseline.
+- **Cons**: Cannot fact-check novel claims not in its training distribution.
+
+### Milestone 2: Agentic AI Fact-Checking (RAG + Web Search)
+- **Methodology**: LangChain ReAct Agent loop using Google Gemini 1.5 Flash.
+- **Agent Workflow**:
+  1. Calls the M1 ML model for a quick statistical baseline.
+  2. Extracts key factual claims using the LLM.
+  3. Uses **DuckDuckGo Web Search** tools to retrieve recent evidence.
+  4. Synthesizes findings using the LLM and outputs a grounded Verdict + Confidence + Cited Sources.
+- **Pros**: Handles zero-shot claims, grounds answers in current factual data, highly interpretable.
 
 ---
 
-### Constraints & Requirements
-- **Team Size:** 3 Students (Aditya Mathur, Om Kar Shukla, Yachna Khanna)
-- **API Budget:** Free Tier Only (Scikit-learn, NLTK, Streamlit)
-- **Framework:** Classical ML (M1) / Agentic AI (M2)
-- **Hosting:** Streamlit Cloud
+## 🛠️ Technology Stack
 
----
-
-### Technology Stack
 | Component | Technology |
 | :--- | :--- |
+| **Agent Framework** | LangChain (`create_react_agent`) |
+| **LLM Backend** | Google Gemini 1.5 Flash |
+| **Web Search capability**| DuckDuckGo Search API (`duckduckgo-search`) |
 | **ML Models (M1)** | Logistic Regression, Decision Trees, Scikit-Learn |
-| **NLP Pipeline** | NLTK (Lemmatization, Stopword Removal), TF-IDF |
+| **NLP Pipeline** | NLTK (Lemmatization), TF-IDF |
 | **UI Framework** | Streamlit |
-| **Execution** | Python 3.x |
 
 ---
 
-### Milestones & Deliverables
+## 💻 Local Setup & Execution
 
-#### Milestone 1: Classical ML Credibility Classification (Current)
-**Objective:** Build a robust baseline system that identifies "Fake" vs "True" news using lexical patterns and statistical weighting *without deep learning or LLMs*.
+### 1. Prerequisites
+You need Python 3.8+ and a Google API key for the Gemini LLM.
+Get a free key here: [Google AI Studio](https://aistudio.google.com/)
 
-**Key Deliverables:**
-- **Pre-processed Dataset:** Cleaned and deduplicated corpus of ~38,644 news articles.
-- **System Architecture:** Sequential pipeline: Preprocessing → TF-IDF Vectorization → Inference.
-- **Working Application:** Streamlit web UI for real-time credibility assessment.
-- **Evaluation Report:** Detailed performance metrics (Accuracy: 98.94%, F1-Score: 99.03%).
+### 2. Environment Variables
+Clone the repo and create a `.env` file in the root directory:
+```bash
+cp .env.example .env
+```
+Edit `.env` and add your key: `GOOGLE_API_KEY=your_key_here`
 
-#### Milestone 2: Agentic AI Fact-Check Assistant (Upcoming)
-**Objective:** Transform the system into an autonomous agent that reasons about specific claims and retrieves evidence from the web to validate news integrity.
+### 3. Install Dependencies
+Create a virtual environment and install the required modules:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
-**Key Deliverables:**
-- **Publicly Deployed App:** Hosted on Streamlit Cloud.
-- **Agent Workflow:** Implementation of reasoning loops (Plan → Retrieve → Verify).
-- **RAG Integration:** Retrieval-Augmented Generation for grounded factual reporting.
-- **Demo Video:** Walkthrough of the agentic verification process.
-
----
-
-### Evaluation Criteria
-
-| Phase | Weight | Criteria |
-| :--- | :--- | :--- |
-| **Milestone 1** | 25% | Data Cleaning, TF-IDF Feature Engineering, Model Accuracy/F1, UI Functional Usability. |
-| **Milestone 2** | 30% | Agentic Reasoning Quality, RAG Implementation, Fact-Retrieval Accuracy, Successful Deployment. |
-
-> [!IMPORTANT]
-> This project adheres to a "Classical-First" philosophy, ensuring a strong statistical baseline is established before moving to complex Generative AI agent architectures.
+### 4. Run the Streamlit Application
+```bash
+streamlit run app.py
+```
+This will launch a local server, opening a two-tab UI where you can perform Fast ML checks or Deep Agentic Fact-Checks.
 
 ---
 
-### How to Run (Milestone 1)
+## 👥 Team
+- Aditya Mathur
+- Om Kar Shukla
+- Yachna Khanna
 
-1. **Install Dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. **Train & Save Model:**
-   ```bash
-   python 13_train_and_save_model.py
-   ```
-
-3. **Launch Streamlit App:**
-   ```bash
-   streamlit run app.py
-   ```
+> **Built for the University End-Semester Capstone Project**
