@@ -1,4 +1,3 @@
-
 import pandas as pd
 import numpy as np
 import matplotlib
@@ -7,11 +6,8 @@ matplotlib.use("Agg")  # non-interactive backend (saves to file)
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-
 sns.set_theme(style="whitegrid", palette="muted", font_scale=1.1)
 COLORS = {"Fake": "#e74c3c", "True": "#2ecc71"}
-
-
 
 
 def load_clean_dataset() -> pd.DataFrame:

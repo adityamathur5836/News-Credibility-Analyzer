@@ -22,12 +22,14 @@ load_dotenv()
 # Try to import agent (might fail if API keys aren't set)
 try:
     from agent.orchestrator import run_agent
+
     AGENT_AVAILABLE = True
 except Exception as e:
     AGENT_AVAILABLE = False
     AGENT_ERROR = str(e)
 
 # ── Setup ────────────────────────────────────────────────────────────────────
+
 
 @st.cache_resource
 def load_ml_model():
@@ -36,11 +38,13 @@ def load_ml_model():
     vectorizer = joblib.load("models/vectorizer.pkl")
     return model, vectorizer
 
+
 @st.cache_resource
 def download_nltk_data():
     """Download NLTK resources once."""
     for res in ["stopwords", "wordnet", "omw-1.4", "punkt", "punkt_tab"]:
         nltk.download(res, quiet=True)
+
 
 def preprocess_text(text: str) -> str:
     """Apply the same preprocessing pipeline used during ML training."""
@@ -55,6 +59,7 @@ def preprocess_text(text: str) -> str:
         lemmatizer.lemmatize(word) for word in tokens if word not in stop_words
     ]
     return " ".join(cleaned_tokens)
+
 
 # ── Page Config ──────────────────────────────────────────────────────────────
 
@@ -90,8 +95,13 @@ download_nltk_data()
 ml_model, ml_vectorizer = load_ml_model()
 
 # Header
-st.markdown('<h1 class="main-title">📰 News Credibility Analyzer</h1>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">Enter a news article or headline to check its credibility.</p>', unsafe_allow_html=True)
+st.markdown(
+    '<h1 class="main-title">📰 News Credibility Analyzer</h1>', unsafe_allow_html=True
+)
+st.markdown(
+    '<p class="subtitle">Enter a news article or headline to check its credibility.</p>',
+    unsafe_allow_html=True,
+)
 
 # Main Input
 user_text = st.text_area(
@@ -102,14 +112,20 @@ user_text = st.text_area(
 )
 
 # Tabs
-tab1, tab2 = st.tabs(["⚡ Fast ML Check (Milestone 1)", "🧠 Deep Agent Fact-Check (Milestone 2)"])
+tab1, tab2 = st.tabs(
+    ["⚡ Fast ML Check (Milestone 1)", "🧠 Deep Agent Fact-Check (Milestone 2)"]
+)
 
 # ── Tab 1: ML Check ─────────────────────────────────────────────────────────
 
 with tab1:
-    st.write("Uses **Logistic Regression + TF-IDF** (Tested on 38K samples, ~97% Accuracy)")
-    
-    if st.button("🔍 Run Fast ML Check", key="btn_ml", type="primary", use_container_width=True):
+    st.write(
+        "Uses **Logistic Regression + TF-IDF** (Tested on 38K samples, ~97% Accuracy)"
+    )
+
+    if st.button(
+        "🔍 Run Fast ML Check", key="btn_ml", type="primary", use_container_width=True
+    ):
         if not user_text or user_text.strip() == "":
             st.warning("⚠️ Please enter some text to analyze.")
         else:
@@ -145,33 +161,46 @@ with tab1:
 # ── Tab 2: Deep Agent Check ─────────────────────────────────────────────────
 
 with tab2:
-    st.write("Uses a **ReAct Agent** with **Web Search** and **Gemini Flash** LLM to verify factual claims.")
-    
+    st.write(
+        "Uses a **ReAct Agent** with **Web Search** and **Gemini Flash** LLM to verify factual claims."
+    )
+
     # Check if API key is set
     has_api_key = bool(os.getenv("GOOGLE_API_KEY")) or ("GOOGLE_API_KEY" in st.secrets)
-    
+
     if not has_api_key:
-         st.error("Google API key is missing! Please set `GOOGLE_API_KEY` in environment variables or `.env`.")
+        st.error(
+            "Google API key is missing! Please set `GOOGLE_API_KEY` in environment variables or `.env`."
+        )
     else:
-        if st.button("🕵️ Run Deep Fact-Check", key="btn_agent", type="primary", use_container_width=True):
+        if st.button(
+            "🕵️ Run Deep Fact-Check",
+            key="btn_agent",
+            type="primary",
+            use_container_width=True,
+        ):
             if not user_text or user_text.strip() == "":
                 st.warning("⚠️ Please enter some text to verify.")
             else:
                 if not AGENT_AVAILABLE:
                     st.error(f"Agent failed to load. Details: {AGENT_ERROR}")
                 else:
-                    with st.spinner("Agent is planning, searching the web, and reasoning..."):
-                        
+                    with st.spinner(
+                        "Agent is planning, searching the web, and reasoning..."
+                    ):
+
                         try:
                             verdict = run_agent(user_text)
                             st.success("Analysis Complete!")
-                            
+
                             # Render the Final Answer as Markdown
                             st.markdown("### Agent Findings")
                             st.markdown(verdict)
-                            
+
                         except Exception as e:
-                            st.error(f"An error occurred during agent verification: {str(e)}")
+                            st.error(
+                                f"An error occurred during agent verification: {str(e)}"
+                            )
 
 
 # ── Footer ───────────────────────────────────────────────────────────────────

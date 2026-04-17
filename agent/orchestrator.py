@@ -1,19 +1,21 @@
 """
 Agent Orchestrator: Combines tools and LLM into a ReAct workflow.
 """
+
 from langchain.agents import create_react_agent, AgentExecutor
 from langchain_core.prompts import PromptTemplate
 from agent.llm_client import get_llm
 from agent.tools import ml_prescreener, web_search
+
 
 def get_agent_executor():
     """Configures and runs the ReAct agent."""
     llm = get_llm()
     # We provide the ML pre-screener and the DuckDuckGo web search
     tools = [ml_prescreener, web_search]
-    
+
     # Custom instructions for the agent
-    template = '''You are a highly intelligent fact-checking agent designed to evaluate the credibility of news articles.
+    template = """You are a highly intelligent fact-checking agent designed to evaluate the credibility of news articles.
     
 Your goal is to determine if a claim or article is Credible, Suspicious, or Fake based on the evidence.
 
@@ -44,27 +46,30 @@ Give a structured response using Markdown with:
 **Detailed Reasoning**: (Step-by-step logic explaining the verdict)
 
 Question: {input}
-Thought: {agent_scratchpad}'''
+Thought: {agent_scratchpad}"""
 
     prompt = PromptTemplate.from_template(template)
-    
+
     agent = create_react_agent(llm, tools, prompt)
     agent_executor = AgentExecutor(
-        agent=agent, 
-        tools=tools, 
-        verbose=True, 
+        agent=agent,
+        tools=tools,
+        verbose=True,
         handle_parsing_errors=True,
-        max_iterations=8
+        max_iterations=8,
     )
     return agent_executor
+
 
 def run_agent(text_claim: str):
     executor = get_agent_executor()
     result = executor.invoke({"input": text_claim})
     return result["output"]
 
+
 if __name__ == "__main__":
     import sys
+
     claim = "NASA faked the moon landing"
     if len(sys.argv) > 1:
         claim = sys.argv[1]
