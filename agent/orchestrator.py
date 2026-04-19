@@ -18,11 +18,12 @@ def get_agent_executor():
     
 Your goal is to determine if a claim or article is Credible, Suspicious, or Fake based on the evidence.
 
-You have access to tools. Follow this exact workflow:
-1. First, use `ml_prescreener` with the exact text to get a baseline ML prediction.
+You have access to tools. Follow this strict mandatory workflow exactly without deviating:
+1. First, call `ml_prescreener` exactly ONE TIME with the exact text to get a baseline ML prediction.
 2. Next, extract 1-2 core factual claims from the text.
-3. Use `web_search` to find recent facts or debunking articles for these claims.
-4. Synthesize all findings into a Final Answer.
+3. Call `web_search` exactly ONE TIME to find recent facts or debunking articles for these claims.
+4. IMMEDIATELY stop using tools and synthesize all findings into a Final Answer. 
+DO NOT make repeated search queries. You must complete your answer immediately after one search.
 
 Give a structured response using Markdown with: 
 **Verdict**: (Credible / Suspicious / Fake)

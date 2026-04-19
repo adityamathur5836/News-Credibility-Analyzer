@@ -14,6 +14,24 @@ import joblib
 import os
 from langchain.tools import tool
 
+# Global memory cache so we don't load huge files arbitrarily
+_GLOBAL_MODEL = None
+_GLOBAL_VECTORIZER = None
+
+
+def _load_models():
+    global _GLOBAL_MODEL, _GLOBAL_VECTORIZER
+    if _GLOBAL_MODEL is None or _GLOBAL_VECTORIZER is None:
+        model_path = os.path.join(
+            os.path.dirname(__file__), "..", "models", "model.pkl"
+        )
+        vectorizer_path = os.path.join(
+            os.path.dirname(__file__), "..", "models", "vectorizer.pkl"
+        )
+        _GLOBAL_MODEL = joblib.load(model_path)
+        _GLOBAL_VECTORIZER = joblib.load(vectorizer_path)
+    return _GLOBAL_MODEL, _GLOBAL_VECTORIZER
+
 
 # ML Pre-screener tool
 def preprocess_text(text: str) -> str:
@@ -53,15 +71,7 @@ def ml_prescreener(text: str) -> str:
     Output: A string indicating the ML prediction (High Credibility or Low Credibility) and its confidence score.
     """
     try:
-        # Assumes this is run from the project root
-        model_path = os.path.join(
-            os.path.dirname(__file__), "..", "models", "model.pkl"
-        )
-        vectorizer_path = os.path.join(
-            os.path.dirname(__file__), "..", "models", "vectorizer.pkl"
-        )
-        model = joblib.load(model_path)
-        vectorizer = joblib.load(vectorizer_path)
+        model, vectorizer = _load_models()
     except Exception as e:
         return f"Error loading ML model. Proceed with deeper agentic search. Details: {str(e)}"
 
