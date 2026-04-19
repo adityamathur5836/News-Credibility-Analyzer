@@ -162,15 +162,15 @@ with tab1:
 
 with tab2:
     st.write(
-        "Uses a **ReAct Agent** with **Web Search** and **Gemini Flash** LLM to verify factual claims."
+        "Uses a **ReAct Agent** with **Web Search** and **Llama 3 (via Groq)** LLM to verify factual claims."
     )
 
     # Check if API key is set
-    has_api_key = bool(os.getenv("GOOGLE_API_KEY")) or ("GOOGLE_API_KEY" in st.secrets)
+    has_api_key = bool(os.getenv("GROQ_API_KEY")) or ("GROQ_API_KEY" in st.secrets)
 
     if not has_api_key:
         st.error(
-            "Google API key is missing! Please set `GOOGLE_API_KEY` in environment variables or `.env`."
+            "Groq API key is missing! Please set `GROQ_API_KEY` in environment variables or `.env`."
         )
     else:
         if st.button(

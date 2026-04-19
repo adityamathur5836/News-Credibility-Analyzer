@@ -56,7 +56,7 @@
 
 This capstone project tackles the automated detection of fake news utilizing two contrasting artificial intelligence paradigms. \textbf{Milestone 1} focused on establishing a robust statistical baseline using classical Machine Learning. By extracting TF-IDF features from a dataset of 38,644 articles and applying a Logistic Regression classifier, the system achieved a 96.7\% accuracy. Though performant on its training distribution, the ML model lacks the capability to verify novel factual assertions. 
 
-\textbf{Milestone 2} addresses this fundamental limitation by introducing an \textbf{Agentic AI framework} powered by Large Language Models (LLMs). Utilizing Google's Gemini 1.5 Flash within a LangChain ReAct (Reasoning and Acting) orchestration loop, the agent autonomously retrieves real-world information using DuckDuckGo web search. The architecture leverages Retrieval-Augmented Generation (RAG) principles to synthesize live web evidence into a conclusive, interpretable credibility verdict complete with confidence metrics and cited sources. Both phases are successfully integrated into an interactive, publicly deployed Streamlit application, yielding a comprehensive and modern pipeline for misinformation detection.
+\textbf{Milestone 2} addresses this fundamental limitation by introducing an \textbf{Agentic AI framework} powered by Large Language Models (LLMs). Utilizing Google's Llama 3 70B within a LangChain ReAct (Reasoning and Acting) orchestration loop, the agent autonomously retrieves real-world information using DuckDuckGo web search. The architecture leverages Retrieval-Augmented Generation (RAG) principles to synthesize live web evidence into a conclusive, interpretable credibility verdict complete with confidence metrics and cited sources. Both phases are successfully integrated into an interactive, publicly deployed Streamlit application, yielding a comprehensive and modern pipeline for misinformation detection.
 
 \vspace{0.3cm}
 \noindent\textbf{Repository:} \url{https://github.com/adityamathur5836/News-Credibility-Analyzer}
@@ -82,7 +82,7 @@ Evaluated on a randomized test subset, the Logistic Regression model attained an
 Milestone 2 enhances the application via a multi-agent architectural loop designed not to simply classify text, but to investigate it. 
 
 \subsection{ReAct Agent Framework}
-The core intelligence engine leverages the \textbf{ReAct} (Reasoning + Acting) capability within the LangChain framework. The ReAct prompt instructs the LLM (Google Gemini 1.5 Flash) to articulate its chain of thought, formulate a strategy, invoke tools, and observe tool outputs until it converges upon a final answer. The ReAct trajectory for a typical query follows:
+The core intelligence engine leverages the \textbf{ReAct} (Reasoning + Acting) capability within the LangChain framework. The ReAct prompt instructs the LLM (Groq Llama 3 1.5 Flash) to articulate its chain of thought, formulate a strategy, invoke tools, and observe tool outputs until it converges upon a final answer. The ReAct trajectory for a typical query follows:
 \begin{enumerate}
     \item \textbf{Question:} "Is it true that [Claim X] occurred?"
     \item \textbf{Thought:} I need to first run the ML pre-screener, then retrieve live evidence if the claim demands verification.
@@ -106,7 +106,7 @@ While an off-the-shelf LLM is prone to hallucination—particularly with novel o
 
 \subsection{Design Justification}
 \begin{itemize}
-    \item \textbf{Google Gemini 1.5 Flash}: Chosen as the underlying LLM for its exceptional inference speed, expansive context window, and accessibility under free-tier API constraints, satisfying the budgetary requirements of the project.
+    \item \textbf{Groq Llama 3 1.5 Flash}: Chosen as the underlying LLM for its exceptional inference speed, expansive context window, and accessibility under free-tier API constraints, satisfying the budgetary requirements of the project.
     \item \textbf{LangChain Orchestration}: Allows seamless integration of bespoke tools (like our bespoke ML classifier) into standardized LLM prompt chains.
     \item \textbf{FAISS / Local Embeddings (Modular)}: For multi-document contexts, the architecture trivially scales by utilizing CPU-bound \texttt{sentence-transformers} traversing an in-memory FAISS indices, ensuring efficient inner-product matching.
 \end{itemize}
@@ -119,6 +119,6 @@ While an off-the-shelf LLM is prone to hallucination—particularly with novel o
 When fed a fabricated recent headline—such as claims regarding fictitious planetary alignments or nonexistent legislative acts—the Milestone 1 ML model often expresses high confidence (due to matching structural linguistic patterns). Conversely, the Milestone 2 Agent invokes the Web Search tool, observes a total lack of credible journalistic reporting corroborating the headline, and correctly labels the claim as \textit{Fake/Suspicious}, providing the thought process and null searches as logic.
 
 \subsection{Cloud Deployment \& Usability}
-The finalized artifact is a production-ready application deployed on \textbf{Streamlit Community Cloud}. The User Interface incorporates a dedicated tab-layout enabling users to juxtapose the rapid, statistical outputs of Milestone 1 against the thorough, epistemological investigative trace produced by the Milestone 2 GenAI Agent. The deployment securely manages the Google API keys via Streamlit's encrypted \texttt{secrets.toml} backend, ensuring security standards aligned with professional engineering best practices.
+The finalized artifact is a production-ready application deployed on \textbf{Streamlit Community Cloud}. The User Interface incorporates a dedicated tab-layout enabling users to juxtapose the rapid, statistical outputs of Milestone 1 against the thorough, epistemological investigative trace produced by the Milestone 2 GenAI Agent. The deployment securely manages the Groq API keys via Streamlit's encrypted \texttt{secrets.toml} backend, ensuring security standards aligned with professional engineering best practices.
 
 \end{document}

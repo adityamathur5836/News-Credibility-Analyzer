@@ -19,7 +19,7 @@ This project evaluates the credibility of news content using two radically diffe
 - **Cons**: Cannot fact-check novel claims not in its training distribution.
 
 ### Milestone 2: Agentic AI Fact-Checking (RAG + Web Search)
-- **Methodology**: LangChain ReAct Agent loop using Google Gemini 1.5 Flash.
+- **Methodology**: LangChain ReAct Agent loop using Groq Llama 3 1.5 Flash.
 - **Agent Workflow**:
   1. Calls the M1 ML model for a quick statistical baseline.
   2. Extracts key factual claims using the LLM.
@@ -34,7 +34,7 @@ This project evaluates the credibility of news content using two radically diffe
 | Component | Technology |
 | :--- | :--- |
 | **Agent Framework** | LangChain (`create_react_agent`) |
-| **LLM Backend** | Google Gemini 1.5 Flash |
+| **LLM Backend** | Groq Llama 3 1.5 Flash |
 | **Web Search capability**| DuckDuckGo Search API (`duckduckgo-search`) |
 | **ML Models (M1)** | Logistic Regression, Decision Trees, Scikit-Learn |
 | **NLP Pipeline** | NLTK (Lemmatization), TF-IDF |
@@ -46,14 +46,14 @@ This project evaluates the credibility of news content using two radically diffe
 
 ### 1. Prerequisites
 You need Python 3.8+ and a Google API key for the Gemini LLM.
-Get a free key here: [Google AI Studio](https://aistudio.google.com/)
+Get a free key here: [Groq Console](https://console.groq.com/keys)
 
 ### 2. Environment Variables
 Clone the repo and create a `.env` file in the root directory:
 ```bash
 cp .env.example .env
 ```
-Edit `.env` and add your key: `GOOGLE_API_KEY=your_key_here`
+Edit `.env` and add your key: `GROQ_API_KEY=your_key_here`
 
 ### 3. Install Dependencies
 Create a virtual environment and install the required modules:

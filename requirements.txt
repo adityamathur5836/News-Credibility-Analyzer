@@ -7,7 +7,7 @@ joblib
 matplotlib
 seaborn
 langchain
-langchain-google-genai
+langchain-groq
 langchain-community
 faiss-cpu
 sentence-transformers
